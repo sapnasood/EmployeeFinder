@@ -2,55 +2,66 @@
 
 // jQuery handler that runs the encapsulated code when the page is ready.
 $(function(){
-  // Click listener for the submit button
+ // Getting references to the name input and author container, as well as the table body
+    const name = $('#name');
+    const photo = $('#photo');
+    const matchname = $('#match-name');
+    const matchphoto = $('#match-img');
+
+   // Click listener for the submit button
   $('#submit').on('click', function(event){
      event.preventDefault();
-  // Here we grab the form elements
+//  This flag will prevent triggering of ajax call when user do not fill out all the fields before submitting     
+     let allInput = '';
+  // Logic to grab th answers provided by user in an array and set allInput as X if user doesn't ans all the 10 questions
      let score = [];
      let ans = '';
      for(let i =1;i <= 10; i++){
       ans = $(`#q${i}`).val();
+      if(!ans){
+        allInput = 'X';
+        break;
+      }
       score.push(ans);
      };
-    console.log(score);
 
-    //  const newSurvey = {
-    //     name: $('#name').val().trim(),
-    //     photo: $('#photo').val().trim(),
-    //     scores: score
-    //   };
+  // Build an object for the user input
+     const newSurvey = {
+        name: name.val().trim(),
+        photo: photo.val().trim(),
+        scores: score
+      };
+// Set allInput as X if user doesn't provide value for Name and image
+      for(let key in newSurvey){
+        if(newSurvey[key] === ''){
+         allInput = 'X';
+         break;
+        }
+      }
+// Error out if user don't ans all the fields on the page
+  if(allInput === 'X'){
+    matchname.text("Please fill out all fields before submitting!");
+  }
+// Make ajax call to get the response back from server  
+   else{
+    $.ajax(
+      {
+       method: 'POST',
+       url: '/api/employees',
+       data: newSurvey
+      }).then(function(response){
+         matchname.text(response.name);
+         matchphoto.attr('src', response.photo);
+          // Clear the form when submitting
+          name.val('');
+          photo.val('');
+          for(let i =1;i <= 10; i++){
+             $(`#q${i}`).val('');
+           };
+      })
 
-    //   for(let key in newSurvey){
-    //     if(newSurvey[key] === ''){
-    //       alert('Please fill out all fields');
-    //       return;
-    //     }
-    //   }
-  
-    //   console.log(newSurvey); 
+   }
 
-    //   $.post('/api/employees', newSurvey,
-    //   function(data) {
-
-    //     // If our POST request was successfully processed, proceed on
-    //     if (data.success) {
-
-    //       console.log('data', data)
-
-    //       // Clear the form when submitting
-    //     //   $('#reserve-name').val('');
-    //     //   $('#reserve-phone').val('');
-    //     //   $('#reserve-email').val('');
-    //     //   $('#reserve-unique-id').val('');
-          
-    //     //   $('#reserve-name').focus();
-    //     } else {
-
-    //       alert('There was a problem with your submission. Please check your entry and try again.');
-    //     }
-        
-
-    //   });
   });
 
 });
