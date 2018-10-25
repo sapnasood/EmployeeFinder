@@ -5,8 +5,7 @@ $(function(){
  // Getting references to the name input and author container, as well as the table body
     const name = $('#name');
     const photo = $('#photo');
-    const matchname = $('#match-name');
-    const matchphoto = $('#match-img');
+
 
    // Click listener for the submit button
   $('#submit').on('click', function(event){
@@ -19,8 +18,9 @@ $(function(){
      for(let i =1;i <= 10; i++){
       ans = $(`#q${i}`).val();
       if(!ans){
-        allInput = 'X';
-        break;
+        $('#modal-title').text('');
+        matchname.text("Please fill out all fields before submitting!");
+        return;
       }
       score.push(ans);
      };
@@ -34,36 +34,39 @@ $(function(){
 // Set allInput as X if user doesn't provide value for Name and image
       for(let key in newSurvey){
         if(newSurvey[key] === ''){
-         allInput = 'X';
-         break;
+          $('#modal-title').text('');
+          matchname.text("Please fill out all fields before submitting!");
+          return;
         }
-      }
-// Error out if user don't ans all the fields on the page
-  if(allInput === 'X'){
-    $('#modal-title').text('');
-    matchname.text("Please fill out all fields before submitting!");
-  }
-// Make ajax call to get the response back from server  
-   else{
-    $.ajax(
-      {
-       method: 'POST',
-       url: '/api/employees',
-       data: newSurvey
-      }).then(function(response){
-        $('#modal-title').text('Best Match'); 
-        matchname.text(response.name);
-         matchphoto.attr('src', response.photo);
-          // Clear the form when submitting
-          name.val('');
-          photo.val('');
-          for(let i =1;i <= 10; i++){
-             $(`#q${i}`).val('');
-           };
-      })
-
-   }
-
+     }
+// Ajax call to get the best match for an employee      
+getMatch(newSurvey); 
   });
 
 });
+
+const getMatch = function(newSurvey){
+// Getting references to the name input and author container, as well as the table body
+ const name = $('#name');
+ const photo = $('#photo');  
+  const matchname = $('#match-name');
+  const matchphoto = $('#match-img');
+  $.ajax(
+    {
+     method: 'POST',
+     url: '/api/employees',
+     data: newSurvey
+    }).then(function(response){
+      $('#modal-title').text('Best Match'); 
+      matchname.text(response.name);
+       matchphoto.attr('src', response.photo);
+        // Clear the form when submitting
+        name.val('');
+        photo.val('');
+        for(let i =1;i <= 10; i++){
+           $(`#q${i}`).val('');
+         };
+    })
+
+
+};
