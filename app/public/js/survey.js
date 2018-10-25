@@ -40,6 +40,7 @@ $(function(){
       }
 // Error out if user don't ans all the fields on the page
   if(allInput === 'X'){
+    $('#modal-title').text('');
     matchname.text("Please fill out all fields before submitting!");
   }
 // Make ajax call to get the response back from server  
@@ -50,7 +51,8 @@ $(function(){
        url: '/api/employees',
        data: newSurvey
       }).then(function(response){
-         matchname.text(response.name);
+        $('#modal-title').text('Best Match'); 
+        matchname.text(response.name);
          matchphoto.attr('src', response.photo);
           // Clear the form when submitting
           name.val('');
