@@ -3,8 +3,10 @@
 // jQuery handler that runs the encapsulated code when the page is ready.
 $(function(){
  // Getting references to the name input and author container, as well as the table body
-    const name = $('#name');
-    const photo = $('#photo');
+ const name = $('#name');
+ const photo = $('#photo');  
+  const matchname = $('#match-name');
+  const matchphoto = $('#match-img');
 
 
    // Click listener for the submit button
